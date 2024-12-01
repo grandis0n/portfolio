@@ -1,0 +1,46 @@
+.home-container {
+    background: linear-gradient(135deg, #6e7f7d, #3c4e4c);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.profile-container {
+    margin-bottom: 30px;
+}
+
+.profile-img {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.name {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.tagline {
+    font-size: 1.5rem;
+    font-style: italic;
+    color: #b0e0e6;
+}
+
+.welcome-message {
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+.welcome-message p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
