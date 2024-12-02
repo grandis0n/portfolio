@@ -1,0 +1,93 @@
+.skills-container {
+    background: linear-gradient(135deg, #6e7f7d, #3c4e4c);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.skills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 30px;
+    justify-items: center;
+    margin-top: 30px;
+}
+
+.skill {
+    text-align: center;
+}
+
+.skill-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.skill-icon {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+
+.skill-circle {
+    margin-bottom: 10px;
+}
+
+.circle-background {
+    fill: none;
+    stroke: #e6e6e6;
+    stroke-width: 10;
+}
+
+.circle-progress {
+    fill: none;
+    stroke: #4caf50;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease;
+}
+
+.circle-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    fill: #333;
+}
+
+
+@media (max-width: 768px) {
+    .skills {
+        grid-template-columns: 1fr;
+    }
+
+    .skill {
+        margin-bottom: 20px;
+    }
+
+    h1, h3 {
+        font-size: 1.5rem;
+    }
+
+    .skill-icon {
+        font-size: 1.5rem;
+    }
+
+    .circle-text {
+        font-size: 1rem;
+    }
+}

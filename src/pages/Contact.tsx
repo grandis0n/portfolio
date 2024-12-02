@@ -1,37 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
+import '../styles/Contact.css';
 
 const Contact: React.FC = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [message, setMessage] = useState("");
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log({ name, email, message });
-    };
-
     return (
-        <div>
-            <h1>Contact Me</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Ваше имя"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-                <input
-                    type="email"
-                    placeholder="Ваша почта"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <textarea
-                    placeholder="Ваше сообщение"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                />
-                <button type="submit">Send</button>
+        <div className="contact-container">
+            <h1>Свяжитесь со мной</h1>
+            <form className="contact-form">
+                <div className="form-group">
+                    <label htmlFor="name">Ваше имя</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Введите ваше имя"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="email">Ваша почта</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Введите ваш email"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="message">Сообщение</label>
+                    <textarea
+                        id="message"
+                        placeholder="Введите ваше сообщение"
+                        required
+                    />
+                </div>
+
+                <button type="submit" className="submit-btn">Отправить</button>
             </form>
         </div>
     );
