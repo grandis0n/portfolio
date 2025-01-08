@@ -14,7 +14,19 @@ h1 {
     font-size: 2rem;
     color: #fff;
     margin-bottom: 20px;
+}
 
+.filter-container {
+    margin-bottom: 20px;
+}
+
+#tech-filter {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
 }
 
 .projects-list {
@@ -32,6 +44,12 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .project-card h3 {
