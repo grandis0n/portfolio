@@ -1,13 +1,37 @@
-import React from 'react';
+import { useState } from 'react';
 import { projects } from '../data/projects';
 import '../styles/Projects.css';
 
-const Projects: React.FC = () => {
+const Projects = () => {
+    const [selectedTech, setSelectedTech] = useState<string>('All');
+
+    const filteredProjects = projects.filter((project) =>
+        selectedTech === 'All' ? true : project.technologies.includes(selectedTech)
+    );
+
     return (
         <div className="projects-container">
             <h1>Мои проекты</h1>
+
+            {/* Фильтр */}
+            <div className="filter-container">
+                <label htmlFor="tech-filter">Фильтр по технологии:</label>
+                <select
+                    id="tech-filter"
+                    value={selectedTech}
+                    onChange={(e) => setSelectedTech(e.target.value)}
+                >
+                    <option value="All">Все</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Dart">Dart</option>
+                    <option value="Swift">Swift</option>
+                </select>
+            </div>
+
             <div className="projects-list">
-                {projects.map((project) => (
+                {filteredProjects.map((project) => (
                     <div key={project.id} className="project-card">
                         <h3>{project.title}</h3>
                         <p>{project.description}</p>
