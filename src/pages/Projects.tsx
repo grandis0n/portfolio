@@ -19,12 +19,21 @@ const Projects: React.FC = () => {
         dispatch(setProjects(projectsData));
     }, [dispatch]);
 
+    useEffect(() => {
+        localStorage.setItem('selectedTech', selectedTech);
+    }, [selectedTech]);
+
     const filteredProjects = projects.filter((project) =>
         selectedTech === 'All' ? true : project.technologies.includes(selectedTech)
     );
 
     const toggleFormVisibility = () => {
         setIsFormVisible((prev) => !prev);
+    };
+
+    const handleTechChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newTech = e.target.value;
+        dispatch(setSelectedTech(newTech));
     };
 
     return (
@@ -42,7 +51,7 @@ const Projects: React.FC = () => {
                 <select
                     id="tech-select"
                     value={selectedTech}
-                    onChange={(e) => dispatch(setSelectedTech(e.target.value))}
+                    onChange={handleTechChange}
                 >
                     <option value="All">Все</option>
                     <option value="HTML">HTML</option>
