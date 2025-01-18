@@ -1,12 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setProjects, setSelectedTech } from '../store/projectsSlice';
 import { projectsData } from '../data/projects';
+import { Project } from '../types/Project';
+import AddProject from '../components/AddProject';
 import '../styles/Projects.css';
 
 const Projects: React.FC = () => {
     const dispatch = useDispatch();
+
+    const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
 
     const projects = useSelector((state: RootState) => state.projects.items);
     const selectedTech = useSelector((state: RootState) => state.projects.selectedTech);
@@ -19,9 +23,19 @@ const Projects: React.FC = () => {
         selectedTech === 'All' ? true : project.technologies.includes(selectedTech)
     );
 
+    const toggleFormVisibility = () => {
+        setIsFormVisible((prev) => !prev);
+    };
+
     return (
         <div className="projects-container">
             <h1>Мои проекты</h1>
+
+            <button className="add-project-btn" onClick={toggleFormVisibility}>
+                {isFormVisible ? 'Закрыть форму' : 'Добавить новый проект'}
+            </button>
+
+            {isFormVisible && <AddProject />}
 
             <div className="filter">
                 <label htmlFor="tech-select">Выберите технологию:</label>
@@ -45,7 +59,7 @@ const Projects: React.FC = () => {
 
             <div className="projects-list">
                 {filteredProjects.length > 0 ? (
-                    filteredProjects.map((project) => (
+                    filteredProjects.map((project: Project) => (
                         <div key={project.id} className="project-card">
                             <h3>{project.title}</h3>
                             <p>{project.description}</p>
