@@ -1,68 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { projects } from '../data/projects';
 import '../styles/Projects.css';
 
-interface Project {
-    name: string;
-    description: string;
-    html_url: string;
-}
+const Projects = () => {
+    const [selectedTech, setSelectedTech] = useState<string>('All');
 
-const Projects: React.FC = () => {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>('');
-
-    useEffect(() => {
-        const fetchAllProjects = async () => {
-            try {
-                let allProjects: Project[] = [];
-                let page = 1;
-                let hasNextPage = true;
-
-                while (hasNextPage) {
-                    const response = await fetch(`https://api.github.com/users/grandis0n/repos?per_page=100&page=${page}`);
-                    if (!response.ok) {
-                        throw new Error('Ошибка при загрузке данных с GitHub');
-                    }
-
-                    const data = await response.json();
-                    allProjects = allProjects.concat(data);
-                    hasNextPage = data.length === 100;
-                    page++;
-                }
-
-                setProjects(allProjects);
-                setLoading(false);
-            } catch (error: unknown) {
-                if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError('Неизвестная ошибка');
-                }
-                setLoading(false);
-            }
-        };
-
-        fetchAllProjects();
-    }, []);
-
-    if (loading) {
-        return <div className="projects-container">Загрузка...</div>;
-    }
-
-    if (error) {
-        return <div className="projects-container">Ошибка: {error}</div>;
-    }
+    const filteredProjects = projects.filter((project) =>
+        selectedTech === 'All' ? true : project.technologies.includes(selectedTech)
+    );
 
     return (
         <div className="projects-container">
             <h1>Мои проекты</h1>
+
+            {/* Фильтр */}
+            <div className="filter-container">
+                <label htmlFor="tech-filter">Фильтр по технологии:</label>
+                <select
+                    id="tech-filter"
+                    value={selectedTech}
+                    onChange={(e) => setSelectedTech(e.target.value)}
+                >
+                    <option value="All">Все</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Dart">Dart</option>
+                    <option value="Swift">Swift</option>
+                </select>
+            </div>
+
             <div className="projects-list">
-                {projects.map((project) => (
-                    <div key={project.name} className="project-card">
-                        <h3>{project.name}</h3>
-                        <p>{project.description || 'Нет описания'}</p>
-                        <a href={project.html_url} target="_blank" rel="noopener noreferrer" className="project-link">
+                {filteredProjects.map((project) => (
+                    <div key={project.id} className="project-card">
+                        <h3>{project.title}</h3>
+                        <p>{project.description}</p>
+                        <p><strong>Технологии:</strong> {project.technologies.join(', ')}</p>
+                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
                             Смотреть на GitHub
                         </a>
                     </div>
