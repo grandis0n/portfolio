@@ -1,39 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { setProjects, setSelectedTech } from '../store/projectsSlice';
-import { projectsData } from '../data/projects';
-import { Project } from '../types/Project';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../store';
+import {setProjects, setSelectedTech} from '../store/projectsSlice';
+import {projectsData} from '../data/projects';
+import {Project} from '../types/Project';
 import {AddProject} from '../components/AddProject';
+import {ALL_TECHNOLOGIES, TECHNOLOGIES_LIST} from '../constants/technologies';
+import {useLocalStorage} from '../utils/localStorage';
 import '../styles/Projects.css';
 
 const Projects: React.FC = () => {
     const dispatch = useDispatch();
 
-    const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+    const [isAddProjectFormVisible, setIsAddProjectFormVisible] = useState<boolean>(false);
 
     const projects = useSelector((state: RootState) => state.projects.items);
     const selectedTech = useSelector((state: RootState) => state.projects.selectedTech);
+
+    const [storedSelectedTech, setStoredSelectedTech] = useLocalStorage<string>('selectedTech', ALL_TECHNOLOGIES);
 
     useEffect(() => {
         dispatch(setProjects(projectsData));
     }, [dispatch]);
 
     useEffect(() => {
-        localStorage.setItem('selectedTech', selectedTech);
-    }, [selectedTech]);
+        dispatch(setSelectedTech(storedSelectedTech));
+    }, [dispatch, storedSelectedTech]);
 
     const filteredProjects = projects.filter((project) =>
-        selectedTech === 'All' ? true : project.technologies.includes(selectedTech)
+        selectedTech === ALL_TECHNOLOGIES ? true : project.technologies.includes(selectedTech)
     );
 
     const toggleFormVisibility = () => {
-        setIsFormVisible((prev) => !prev);
+        setIsAddProjectFormVisible((prev) => !prev);
     };
 
     const handleTechChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newTech = e.target.value;
-        dispatch(setSelectedTech(newTech));
+        setStoredSelectedTech(newTech);
     };
 
     return (
@@ -41,10 +45,10 @@ const Projects: React.FC = () => {
             <h1>Мои проекты</h1>
 
             <button className="add-project-btn" onClick={toggleFormVisibility}>
-                {isFormVisible ? 'Закрыть форму' : 'Добавить новый проект'}
+                {isAddProjectFormVisible ? 'Закрыть форму' : 'Добавить новый проект'}
             </button>
 
-            {isFormVisible && <AddProject />}
+            {isAddProjectFormVisible && <AddProject/>}
 
             <div className="filter">
                 <label htmlFor="tech-select">Выберите технологию:</label>
@@ -53,16 +57,11 @@ const Projects: React.FC = () => {
                     value={selectedTech}
                     onChange={handleTechChange}
                 >
-                    <option value="All">Все</option>
-                    <option value="HTML">HTML</option>
-                    <option value="CSS">CSS</option>
-                    <option value="JavaScript">JavaScript</option>
-                    <option value="React">React</option>
-                    <option value="Dart">Dart</option>
-                    <option value="Flutter">Flutter</option>
-                    <option value="Node.js">Node.js</option>
-                    <option value="Python">Python</option>
-                    <option value="Flask">Flask</option>
+                    {TECHNOLOGIES_LIST.map((tech) => (
+                        <option key={tech} value={tech}>
+                            {tech}
+                        </option>
+                    ))}
                 </select>
             </div>
 
