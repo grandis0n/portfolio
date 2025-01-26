@@ -4,7 +4,7 @@ import { RootState } from '../store';
 import { setProjects, setSelectedTech } from '../store/projectsSlice';
 import { projectsData } from '../data/projects';
 import { Project } from '../types/Project';
-import AddProject from '../components/AddProject';
+import {AddProject} from '../components/AddProject';
 import '../styles/Projects.css';
 
 const Projects: React.FC = () => {
