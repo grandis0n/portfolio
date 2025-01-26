@@ -1,0 +1,35 @@
+.add-project-container {
+    margin: 20px 0;
+}
+
+.add-project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+input,
+textarea {
+    padding: 8px;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+button {
+    padding: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
