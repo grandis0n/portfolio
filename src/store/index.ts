@@ -18,6 +18,8 @@ const preloadedState = {
     projects: {
         items: getStoredProjects(),
         selectedTech: ALL_TECHNOLOGIES,
+        loading: false,
+        error: null,
     },
 };
 

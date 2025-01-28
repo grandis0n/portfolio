@@ -1,26 +1,23 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store';
-import {setProjects, setSelectedTech} from '../store/projectsSlice';
-import {projectsData} from '../data/projects';
-import {Project} from '../types/Project';
-import {AddProject} from '../components/AddProject';
-import {ALL_TECHNOLOGIES, TECHNOLOGIES_LIST} from '../constants/technologies';
-import {useLocalStorage} from '../utils/localStorage';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {AppDispatch, RootState} from '../store';
+import { setSelectedTech, fetchGitHubProjects } from '../store/projectsSlice';
+import { Project } from '../types/Project';
+import { AddProject } from '../components/AddProject';
+import { ALL_TECHNOLOGIES, TECHNOLOGIES_LIST } from '../constants/technologies';
+import { useLocalStorage } from '../utils/localStorage';
 import '../styles/Projects.css';
 
 const Projects: React.FC = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const [isAddProjectFormVisible, setIsAddProjectFormVisible] = useState<boolean>(false);
-
-    const projects = useSelector((state: RootState) => state.projects.items);
-    const selectedTech = useSelector((state: RootState) => state.projects.selectedTech);
-
     const [storedSelectedTech, setStoredSelectedTech] = useLocalStorage<string>('selectedTech', ALL_TECHNOLOGIES);
 
+    const { items: projects, selectedTech, loading, error } = useSelector((state: RootState) => state.projects);
+
     useEffect(() => {
-        dispatch(setProjects(projectsData));
+        dispatch(fetchGitHubProjects('grandis0n'));
     }, [dispatch]);
 
     useEffect(() => {
@@ -40,6 +37,10 @@ const Projects: React.FC = () => {
         setStoredSelectedTech(newTech);
     };
 
+    const handleRefresh = () => {
+        dispatch(fetchGitHubProjects('grandis0n'));
+    };
+
     return (
         <div className="projects-container">
             <h1>Мои проекты</h1>
@@ -48,15 +49,18 @@ const Projects: React.FC = () => {
                 {isAddProjectFormVisible ? 'Закрыть форму' : 'Добавить новый проект'}
             </button>
 
-            {isAddProjectFormVisible && <AddProject/>}
+            {isAddProjectFormVisible && <AddProject />}
+
+            <button className="refresh-projects-btn" onClick={handleRefresh}>
+                Обновить проекты
+            </button>
+
+            {loading && <div>Загрузка...</div>}
+            {error && <div style={{ color: 'red' }}>{error}</div>}
 
             <div className="filter">
                 <label htmlFor="tech-select">Выберите технологию:</label>
-                <select
-                    id="tech-select"
-                    value={selectedTech}
-                    onChange={handleTechChange}
-                >
+                <select id="tech-select" value={selectedTech} onChange={handleTechChange}>
                     {TECHNOLOGIES_LIST.map((tech) => (
                         <option key={tech} value={tech}>
                             {tech}
@@ -74,12 +78,7 @@ const Projects: React.FC = () => {
                             <p>
                                 <strong>Технологии:</strong> {project.technologies.join(', ')}
                             </p>
-                            <a
-                                href={project.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="project-link"
-                            >
+                            <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
                                 Смотреть на GitHub
                             </a>
                         </div>
