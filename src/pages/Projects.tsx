@@ -1,26 +1,30 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
 import {RootState} from '../store';
-import {setProjects, setSelectedTech} from '../store/projectsSlice';
-import {projectsData} from '../data/projects';
+import {useAppDispatch} from '../hooks/useAppDispatch.ts';
+import {setSelectedTech, fetchGitHubProjects} from '../store/projectsSlice';
 import {Project} from '../types/Project';
 import {AddProject} from '../components/AddProject';
 import {ALL_TECHNOLOGIES, TECHNOLOGIES_LIST} from '../constants/technologies';
 import {useLocalStorage} from '../utils/localStorage';
 import '../styles/Projects.css';
+import {GITHUB_USERNAME} from '../constants/github.ts';
 
 const Projects: React.FC = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const [isAddProjectFormVisible, setIsAddProjectFormVisible] = useState<boolean>(false);
-
-    const projects = useSelector((state: RootState) => state.projects.items);
-    const selectedTech = useSelector((state: RootState) => state.projects.selectedTech);
-
     const [storedSelectedTech, setStoredSelectedTech] = useLocalStorage<string>('selectedTech', ALL_TECHNOLOGIES);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const {items: projects, selectedTech, loading, error} = useSelector((state: RootState) => state.projects);
 
     useEffect(() => {
-        dispatch(setProjects(projectsData));
+        dispatch(fetchGitHubProjects(GITHUB_USERNAME))
+            .catch((err) => {
+                setErrorMessage('Ошибка при загрузке проектов. Попробуйте позже.');
+                console.error(err);
+            });
     }, [dispatch]);
 
     useEffect(() => {
@@ -40,6 +44,14 @@ const Projects: React.FC = () => {
         setStoredSelectedTech(newTech);
     };
 
+    const handleRefresh = () => {
+        dispatch(fetchGitHubProjects(GITHUB_USERNAME))
+            .catch((err) => {
+                setErrorMessage('Ошибка при обновлении проектов. Попробуйте позже.');
+                console.error(err);
+            });
+    };
+
     return (
         <div className="projects-container">
             <h1>Мои проекты</h1>
@@ -50,13 +62,17 @@ const Projects: React.FC = () => {
 
             {isAddProjectFormVisible && <AddProject/>}
 
+            <button className="refresh-projects-btn" onClick={handleRefresh}>
+                Обновить проекты
+            </button>
+
+            {loading && <div>Загрузка...</div>}
+            {error && <div style={{color: 'red'}}>{error}</div>}
+            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
             <div className="filter">
                 <label htmlFor="tech-select">Выберите технологию:</label>
-                <select
-                    id="tech-select"
-                    value={selectedTech}
-                    onChange={handleTechChange}
-                >
+                <select id="tech-select" value={selectedTech} onChange={handleTechChange}>
                     {TECHNOLOGIES_LIST.map((tech) => (
                         <option key={tech} value={tech}>
                             {tech}
@@ -74,12 +90,7 @@ const Projects: React.FC = () => {
                             <p>
                                 <strong>Технологии:</strong> {project.technologies.join(', ')}
                             </p>
-                            <a
-                                href={project.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="project-link"
-                            >
+                            <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
                                 Смотреть на GitHub
                             </a>
                         </div>

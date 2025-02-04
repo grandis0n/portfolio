@@ -104,3 +104,16 @@ h1 {
     background-color: #45a049;
 }
 
+.refresh-projects-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.refresh-projects-btn:hover {
+    background-color: #0056b3;
+}
