@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Project } from '../types/Project';
-import { getGitHubProjects } from '../services/githubService';
-import { ALL_TECHNOLOGIES, TECHNOLOGIES_LIST } from '../constants/technologies';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
+import {Project} from '../types/Project';
+import {getGitHubProjects} from '../services/githubService';
+import {ALL_TECHNOLOGIES, TECHNOLOGIES_LIST} from '../constants/technologies';
 
 type Technology = typeof TECHNOLOGIES_LIST[number];
 
@@ -19,18 +19,58 @@ const initialState: ProjectsState = {
     error: null,
 };
 
-export const fetchGitHubProjects = createAsyncThunk<Project[], string>(
-    'projects/fetchGitHubProjects',
-    async (username: string) => {
-        const repos = await getGitHubProjects(username);
+const validateRepo = (repo: {
+    id: number;
+    name: string;
+    html_url: string;
+    description: string | null;
+    language: string | null
+}): boolean => {
+    return (
+        typeof repo.id === 'number' &&
+        typeof repo.name === 'string' &&
+        typeof repo.html_url === 'string' &&
+        (typeof repo.language === 'string' || repo.language === null)
+    );
+};
 
-        return repos.map((repo) => ({
-            id: repo.id.toString(),
-            title: repo.name,
-            description: repo.description || 'Нет описания',
-            link: repo.html_url,
-            technologies: repo.language ? [repo.language] : [],
-        }));
+
+export const fetchGitHubProjects = createAsyncThunk<
+    Project[],
+    string,
+    { rejectValue: string }
+>(
+    'projects/fetchGitHubProjects',
+    async (username: string, {rejectWithValue}) => {
+        try {
+            const repos = await getGitHubProjects(username);
+
+            const mappedRepos = repos.map((repo) => {
+                if (!validateRepo(repo)) {
+                    return null;
+                }
+
+                return {
+                    id: repo.id.toString(),
+                    title: repo.name,
+                    description: repo.description || 'Нет описания',
+                    link: repo.html_url,
+                    technologies: repo.language ? [repo.language] : [],
+                };
+            }).filter((repo) => repo !== null);
+
+            if (mappedRepos.length === 0) {
+                return rejectWithValue('Не удалось найти корректные проекты для этого пользователя.');
+            }
+
+            return mappedRepos;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message || 'Произошла ошибка при загрузке данных с GitHub.');
+            } else {
+                return rejectWithValue('Неизвестная ошибка при загрузке данных.');
+            }
+        }
     }
 );
 
@@ -66,11 +106,11 @@ const projectsSlice = createSlice({
             })
             .addCase(fetchGitHubProjects.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || 'Ошибка при загрузке проектов';
+                state.error = action.payload as string || 'Ошибка при загрузке проектов';
             });
     },
 });
 
-export const { setProjects, addProject, setSelectedTech, resetError } = projectsSlice.actions;
+export const {setProjects, addProject, setSelectedTech, resetError} = projectsSlice.actions;
 
 export default projectsSlice.reducer;
